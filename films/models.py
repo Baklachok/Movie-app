@@ -5,5 +5,5 @@ class User(AbstractUser):
     pass
 
 class Film(models.Model):
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(max_length=128)
     users = models.ManyToManyField(User, related_name='films')
