@@ -8,6 +8,7 @@ from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.contrib import messages
 
 from films.forms import RegisterForm
 from films.models import Film
@@ -55,6 +56,7 @@ def add_film(request):
     request.user.films.add(film)
 
     films = request.user.films.all()
+    messages.success(request, f"Added {name} to list of film")
     return render(request, 'partials/film-list.html', {'films': films})
 
 @login_required
@@ -76,3 +78,6 @@ def search_film(request):
     )
     context = {'results': results}
     return render(request, 'partials/search-results.html', context)
+
+def clear(request):
+    return HttpResponse("")
