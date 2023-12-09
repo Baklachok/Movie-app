@@ -50,7 +50,7 @@ def check_username(request):
 def add_film(request):
     name = request.POST.get('filmname')
 
-    film = Film.objects.create(name=name)
+    film = Film.objects.get_or_create(name=name)[0]
 
     request.user.films.add(film)
 
