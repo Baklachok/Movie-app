@@ -9,7 +9,7 @@
                       style="cursor: pointer;"
                       hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
                       hx-post="{% url 'add-film' %}"
-                      hx-vals='{"filname": "{{film.name}}"}'
+                      hx-vals='{"filmname": "{{film.name}}"}'
                       hx-target="#film-list">add</span>
             </li>
         {% endfor %}
