@@ -12,7 +12,7 @@ from django.contrib import messages
 
 from films.forms import RegisterForm
 from films.models import Film, UserFilms
-from films.utils import get_max_order
+from films.utils import get_max_order, reorder
 
 
 class IndexView(TemplateView):
@@ -66,6 +66,8 @@ def add_film(request):
 @require_http_methods(['DELETE'])
 def delete_film(request, pk):
     UserFilms.objects.get(pk=pk).delete()
+
+    reorder(request.user)
 
     films = UserFilms.objects.filter(user=request.user)
     return render(request, 'partials/film-list.html', {'films': films})
