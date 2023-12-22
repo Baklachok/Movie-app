@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 from django.views.generic.list import ListView
@@ -97,4 +97,15 @@ def sort(request):
         userfilm.save()
         films.append((userfilm))
 
+    return render(request, 'partials/film-list.html', {'films': films})
+
+@login_required
+def detail(request, pk):
+    userfilm = get_object_or_404(UserFilms, pk=pk)
+    context = {'userfilm': userfilm}
+    return render(request, 'partials/film-detail.html', context)
+
+@login_required
+def films_partial(request):
+    films = UserFilms.objects.filter(user=request.user)
     return render(request, 'partials/film-list.html', {'films': films})
