@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import LoginView
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
@@ -13,6 +14,7 @@ from django.contrib import messages
 from films.forms import RegisterForm
 from films.models import Film, UserFilms
 from films.utils import get_max_order, reorder
+from htmx import settings
 
 
 class IndexView(TemplateView):
@@ -95,15 +97,28 @@ def clear(request):
 
 def sort(request):
     film_pks_order = request.POST.getlist('film_order')
-    print(film_pks_order)
     films = []
-    for idx, film_pk in enumerate(film_pks_order, start=1):
-        userfilm = UserFilms.objects.get(pk=film_pk)
-        userfilm.order = idx
-        userfilm.save()
-        films.append((userfilm))
+    updated_films = []
 
-    return render(request, 'partials/film-list.html', {'films': films})
+    userfilms = UserFilms.objects.prefetch_related('film').filter(user=request.user)
+    for idx, film_pk in enumerate(film_pks_order, start=1):
+        # userfilm = UserFilms.objects.get(pk=film_pk)
+        userfilm = next(u for u in userfilms if u.pk == int(film_pk))
+
+        if userfilm.order != idx:
+            userfilm.order = idx
+            updated_films.append(userfilm)
+
+        films.append(userfilm)
+
+    UserFilms.objects.bulk_update(updated_films, ['order'])
+
+    paginator = Paginator(films, settings.PAGINATE_BY)
+    page_number = len(film_pks_order) / settings.PAGINATE_BY
+    page_obj = paginator.get_page(page_number)
+    context = {'films': films, 'page_obj': page_obj}
+
+    return render(request, 'partials/film-list.html', context)
 
 @login_required
 def detail(request, pk):
