@@ -1,7 +1,7 @@
 {% for film in films %}
 
     {% if forloop.last %}
-        <div hx-get="{% film-list %}" hx-trigger="revealed" hx-swap="afterend" hx-target="this">
+        <div hx-get="{% url 'film-list' %}?page={{ page_obj.number|add:1 }}" hx-trigger="revealed" hx-swap="afterend" hx-target="this">
     {% else %}
         <div>
     {% endif %}
