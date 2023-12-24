@@ -44,7 +44,7 @@ class FilmList(LoginRequiredMixin, ListView):
         return 'films.html'
 
     def get_queryset(self):
-        return UserFilms.objects.filter(user=self.request.user)
+        return UserFilms.objects.prefetch_related('film').filter(user=self.request.user)
 
 def check_username(request):
     username = request.POST.get('username')
