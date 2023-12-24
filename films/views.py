@@ -34,7 +34,8 @@ class RegisterView(FormView):
 
 class FilmList(LoginRequiredMixin, ListView):
     template_name = 'films.html'
-    model = Film
+    model = UserFilms
+    paginate_by = 20
     context_object_name = 'films'
 
     def get_queryset(self):
